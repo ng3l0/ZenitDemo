@@ -235,7 +235,8 @@ const CalendarView = () => {
                           <Zap className="w-4 h-4 text-purple-600" />
                           <div className="flex-1">
                             <p className="text-sm font-medium">{dynamicHabitSlot.name}</p>
-                            <p className="text-xs text-gray-600">{habit.duration} minutes</p>
+                            <p className="text-xs text-gray-600"> {(habit.duration / 60).toFixed(1)} hour
+                            </p>
                           </div>
                         </div>
                       </div>
