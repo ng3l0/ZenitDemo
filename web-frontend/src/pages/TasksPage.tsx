@@ -97,7 +97,7 @@ const TasksPage = () => {
       {
         id: habits.length + 1,
         name: newHabit.habitName,
-        frequency: newHabit.frequency,
+        frequency: `${newHabit.frequency} /week`,
         duration: `${newHabit.duration} min`,
         icon: newHabit.icon || 'running',
         score: '+0',

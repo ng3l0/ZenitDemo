@@ -1,6 +1,15 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-from algorithm import Week, Day, Task, Habit, FreeSlot, reschedule_week
+from algorithm import (
+    Week,
+    Day,
+    Task,
+    Habit,
+    FreeSlot,
+    FixedActivity,
+    ScheduledActivity,
+    reschedule_week,
+)
 
 app = Flask(__name__)
 CORS(app)  # Enable CORS for frontend-backend communication
