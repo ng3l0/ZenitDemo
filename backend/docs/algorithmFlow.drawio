@@ -1,0 +1,80 @@
+<mxfile host="65bd71144e">
+    <diagram id="8Gnu6wv5IqhWCvMWTSXW" name="Page-1">
+        <mxGraphModel dx="499" dy="347" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="0" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+            <root>
+                <mxCell id="0"/>
+                <mxCell id="1" parent="0"/>
+                <mxCell id="3" value="Fixed Schedule" style="swimlane;fontStyle=1;align=center;verticalAlign=middle;childLayout=stackLayout;horizontal=1;startSize=29;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=0;marginBottom=0;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="250" y="330" width="280" height="100" as="geometry"/>
+                </mxCell>
+                <mxCell id="4" value="type: Schedule" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" parent="3" vertex="1">
+                    <mxGeometry y="29" width="280" height="25" as="geometry"/>
+                </mxCell>
+                <mxCell id="5" value="contains: fixed activities and freeTimeSlots&lt;br&gt;&amp;nbsp;(for now only free slots)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" parent="3" vertex="1">
+                    <mxGeometry y="54" width="280" height="46" as="geometry"/>
+                </mxCell>
+                <mxCell id="6" value="List of User's Activities" style="swimlane;fontStyle=1;align=center;verticalAlign=middle;childLayout=stackLayout;horizontal=1;startSize=29;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=0;marginBottom=0;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="250" y="480" width="280" height="100" as="geometry"/>
+                </mxCell>
+                <mxCell id="7" value="type: List &amp;lt;Activity&amp;gt;" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" parent="6" vertex="1">
+                    <mxGeometry y="29" width="280" height="25" as="geometry"/>
+                </mxCell>
+                <mxCell id="8" value="contains all the user's habits and to do to schedule&amp;nbsp;" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" parent="6" vertex="1">
+                    <mxGeometry y="54" width="280" height="46" as="geometry"/>
+                </mxCell>
+                <mxCell id="9" value="List of User's Activities to schedule" style="swimlane;fontStyle=1;align=center;verticalAlign=middle;childLayout=stackLayout;horizontal=1;startSize=29;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=0;marginBottom=0;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="870" y="460" width="500" height="140" as="geometry"/>
+                </mxCell>
+                <mxCell id="10" value="type: List &amp;lt;Activity&amp;gt;" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" parent="9" vertex="1">
+                    <mxGeometry y="29" width="500" height="25" as="geometry"/>
+                </mxCell>
+                <mxCell id="11" value="initially a copy, than in this list the activities are modified if they are scheduled&lt;br&gt;-&amp;gt; so if I schedule a task -&amp;gt; delete it&lt;br&gt;&lt;span style=&quot;white-space: pre;&quot;&gt;&#9;&lt;/span&gt;&amp;nbsp;if I schedule a habit -&amp;gt; modify the remain frequency and priority index&lt;br&gt;-&amp;gt; at the end of the scheduling -&amp;gt; tasks that are not present here but in the input yes -&amp;gt;&amp;nbsp;&amp;nbsp;&lt;br&gt;&lt;span style=&quot;white-space: pre;&quot;&gt;&#9;&lt;/span&gt;-&amp;gt; if the user accept the change -&amp;gt; delete from the activity list (tasks)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" parent="9" vertex="1">
+                    <mxGeometry y="54" width="500" height="86" as="geometry"/>
+                </mxCell>
+                <mxCell id="12" value="Dynamic Schedule" style="swimlane;fontStyle=1;align=center;verticalAlign=middle;childLayout=stackLayout;horizontal=1;startSize=29;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=0;marginBottom=0;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="920" y="310" width="370" height="100" as="geometry"/>
+                </mxCell>
+                <mxCell id="13" value="type: Schedule" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" parent="12" vertex="1">
+                    <mxGeometry y="29" width="370" height="25" as="geometry"/>
+                </mxCell>
+                <mxCell id="14" value="this is the schedule that will constantly be modified and rescheduled&lt;br&gt;its latest version would be the output" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" parent="12" vertex="1">
+                    <mxGeometry y="54" width="370" height="46" as="geometry"/>
+                </mxCell>
+                <mxCell id="25" style="edgeStyle=none;html=1;entryX=0;entryY=0;entryDx=0;entryDy=180;entryPerimeter=0;" parent="1" source="18" target="23" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="18" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;" parent="1" vertex="1">
+                    <mxGeometry x="770" y="220" width="760" height="500" as="geometry"/>
+                </mxCell>
+                <mxCell id="21" style="edgeStyle=none;html=1;entryX=-0.003;entryY=0.386;entryDx=0;entryDy=0;entryPerimeter=0;" parent="1" source="19" target="18" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="19" value="Input" style="shape=folder;fontStyle=1;tabWidth=110;tabHeight=30;tabPosition=left;html=1;boundedLbl=1;labelInHeader=1;container=1;collapsible=0;fillColor=none;" parent="1" vertex="1">
+                    <mxGeometry x="170" y="190" width="460" height="440" as="geometry"/>
+                </mxCell>
+                <mxCell id="20" value="" style="html=1;strokeColor=none;resizeWidth=1;resizeHeight=1;fillColor=none;part=1;connectable=0;allowArrows=0;deletable=0;" parent="19" vertex="1">
+                    <mxGeometry width="460.00000000000006" height="308" relative="1" as="geometry">
+                        <mxPoint y="30" as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="23" value="Output" style="shape=folder;fontStyle=1;tabWidth=110;tabHeight=30;tabPosition=left;html=1;boundedLbl=1;labelInHeader=1;container=1;collapsible=0;fillColor=none;" parent="1" vertex="1">
+                    <mxGeometry x="1750" y="295" width="420" height="230" as="geometry"/>
+                </mxCell>
+                <mxCell id="24" value="" style="html=1;strokeColor=none;resizeWidth=1;resizeHeight=1;fillColor=none;part=1;connectable=0;allowArrows=0;deletable=0;" parent="23" vertex="1">
+                    <mxGeometry width="420" height="161" relative="1" as="geometry">
+                        <mxPoint y="30" as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="15" value="Suggested Schedule" style="swimlane;fontStyle=1;align=center;verticalAlign=middle;childLayout=stackLayout;horizontal=1;startSize=29;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=0;marginBottom=0;html=1;" parent="23" vertex="1">
+                    <mxGeometry x="70" y="90" width="280" height="100" as="geometry"/>
+                </mxCell>
+                <mxCell id="16" value="type: Schedule" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" parent="15" vertex="1">
+                    <mxGeometry y="29" width="280" height="25" as="geometry"/>
+                </mxCell>
+                <mxCell id="17" value="contains: fixed activities and freeTimeSlots&lt;br&gt;&amp;nbsp;(now are scheduled Activities)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" parent="15" vertex="1">
+                    <mxGeometry y="54" width="280" height="46" as="geometry"/>
+                </mxCell>
+            </root>
+        </mxGraphModel>
+    </diagram>
+</mxfile>
