@@ -259,12 +259,13 @@ class Week:
 
 def reschedule_week(user_week, activity_list):
     """
-    Reschedules a given week based on available free slots and activity priorities.
+    Reschedules a given week based on available free slots and activity priorities using Pareto Optimization.
     :param user_week: A Week object representing the user's current schedule.
     :param activity_list: A list of all activities (Habits and Tasks) to be scheduled.
     :return: A rescheduled Week object.
     """
-    print("Rescheduling week debug 1...")
+    print("Starting rescheduling process with Pareto optimization...")
+
     # Copy the week and activities list to work locally
     rescheduled_week = deepcopy(user_week)
     activities_to_schedule = deepcopy(activity_list)
@@ -277,53 +278,51 @@ def reschedule_week(user_week, activity_list):
 
         # Filter free slots
         for free_slot in day.free_slots:
-            activityCloser = None  # I initialize the activityCloser to None
             if isinstance(free_slot, FreeSlot):
                 # Calculate priority index for each activity for the current day
                 for activity in activities_to_schedule:
                     activity.calculate_priority_index(day.date)
 
-                # Sort activities by priority index (highest first)
-                activities_to_schedule.sort(
-                    key=lambda x: x.priority_index, reverse=True
-                )
-                # for debug print the name of the activities and their priority index
-                for activity in activities_to_schedule:
-                    print(
-                        f"Activity: {activity.name_id} - Priority Index: {activity.priority_index}"
-                    )
+                # Collect Pareto-optimal candidates
+                pareto_candidates = []
 
-                # Find the best activity to schedule in the current free slot
                 for activity in activities_to_schedule:
-                    # for debug print name of activity and priority index
                     if activity.duration <= free_slot.duration():
-                        # Schedule the activity if matches enought the stress level or if the priority index is too high
-                        if (
-                            abs(activity.stress_index - free_slot.stress_level) < 10
-                            or activity.priority_index - activity.user_priority * 2 > 10
-                        ):
+                        delta_stress = abs(
+                            activity.stress_index - free_slot.stress_level
+                        )
+
+                        # If priority index is very high due to deadline, override Pareto considerations
+                        if activity.priority_index >= 15:
+                            print(
+                                f"Warning: Scheduling {activity.name_id} in a high-stress slot due to urgent deadline."
+                            )
                             scheduleActivity(
                                 day, free_slot, activity, activities_to_schedule
                             )
-                            break  # Move to the next free slot
-
-                        # if the activity is not scheduled I check if it is the closest to the stress level
-                        else:
-                            if activityCloser == None:
-                                activityCloser = activity
-                            elif abs(
-                                activity.stress_index - free_slot.stress_level
-                            ) < abs(
-                                activityCloser.stress_index - free_slot.stress_level
-                            ):
-                                activityCloser = activity
-
-                        if activity == activities_to_schedule[-1]:
-                            # if is the last activity in the list I schedule the closest to the stress level
-                            scheduleActivity(
-                                day, free_slot, activityCloser, activities_to_schedule
-                            )
                             break
+
+                        # Add the activity as a Pareto candidate
+                        pareto_candidates.append(
+                            (activity, delta_stress, activity.priority_index)
+                        )
+
+                else:
+                    # Identify the Pareto-optimal activity
+                    if pareto_candidates:
+                        # Minimize delta_stress and maximize priority_index
+                        pareto_optimal = sorted(
+                            pareto_candidates,
+                            key=lambda x: (
+                                x[1],
+                                -x[2],
+                            ),  # Minimize stress mismatch, maximize priority
+                        )[0][0]  # Select the best candidate
+
+                        # Schedule the Pareto-optimal activity
+                        scheduleActivity(
+                            day, free_slot, pareto_optimal, activities_to_schedule
+                        )
 
     return rescheduled_week
 
@@ -334,34 +333,44 @@ def scheduleActivity(day, free_slot, activity, activities_to_schedule):
     :param day: Day object where the activity will be scheduled.
     :param free_slot: FreeSlot object representing the free slot.
     :param activity: Activity object to be scheduled.
+    :param activities_to_schedule: The list of activities to update after scheduling.
     """
+    # Create a scheduled activity object
     scheduled_activity = ScheduledActivity(
         start_time=free_slot.start_time.strftime("%H:%M"),
-        end_time=free_slot.end_time.strftime("%H:%M"),
+        end_time=(
+            datetime.combine(datetime.min, free_slot.start_time)
+            + timedelta(minutes=activity.duration)
+        )
+        .time()
+        .strftime("%H:%M"),
         day=free_slot.day.strftime("%Y-%m-%d"),
         stress_level=free_slot.stress_level,
         activity_name_id=activity.name_id,
     )
 
-    # if the free slot is too short to schedule the activity plus 10 minutes of break
-    if free_slot.duration() > activity.duration + 10:
-        # local var time for free_slot.start_time + activity.duration + 10 minutes
-        time = datetime.combine(datetime.min, free_slot.start_time) + timedelta(
-            minutes=activity.duration + 10
-        )
+    # If the free slot has more time left, create a new free slot
+    if free_slot.duration() > activity.duration + 10:  # Adding a 10-minute break
+        new_free_start = (
+            datetime.combine(datetime.min, free_slot.start_time)
+            + timedelta(minutes=activity.duration + 10)
+        ).time()
 
-        # create a new free slot with the remaining time (for now with the same stress index -> then call the function to calculate)
         new_free_slot = FreeSlot(
-            # strat time is the end time of the activity + 10 minutes
-            start_time=time.time().strftime("%H:%M"),
+            start_time=new_free_start.strftime("%H:%M"),
             end_time=free_slot.end_time.strftime("%H:%M"),
             day=free_slot.day.strftime("%Y-%m-%d"),
-            stress_level=free_slot.stress_level,
+            stress_level=free_slot.stress_level,  # Assuming the same stress level initially
         )
+
+        # Add the new free slot to the day
+        day.add_free_slot(new_free_slot)
+
+    # Remove the old free slot and add the scheduled activity
     day.free_slots.remove(free_slot)
     day.free_slots.append(scheduled_activity)
 
-    # Update activity list
+    # Update the activities to schedule
     if isinstance(activity, Habit):
         activity.remaining_frequency -= 1
         if activity.remaining_frequency <= 0:
