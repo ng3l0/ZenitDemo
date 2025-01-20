@@ -264,7 +264,7 @@ def reschedule_week(user_week, activity_list):
     :param activity_list: A list of all activities (Habits and Tasks) to be scheduled.
     :return: A rescheduled Week object.
     """
-    print("Starting rescheduling process with Pareto optimization...")
+    print("Starting rescheduling process with stress compensation...")
 
     # Copy the week and activities list to work locally
     rescheduled_week = deepcopy(user_week)
@@ -288,14 +288,15 @@ def reschedule_week(user_week, activity_list):
 
                 for activity in activities_to_schedule:
                     if activity.duration <= free_slot.duration():
-                        delta_stress = abs(
+                        # Calculate stress compensation (maximize absolute difference)
+                        stress_compensation = abs(
                             activity.stress_index - free_slot.stress_level
                         )
 
                         # If priority index is very high due to deadline, override Pareto considerations
                         if activity.priority_index >= 15:
                             print(
-                                f"Warning: Scheduling {activity.name_id} in a high-stress slot due to urgent deadline."
+                                f"Warning: Scheduling {activity.name_id} in a slot with high stress mismatch due to urgent deadline."
                             )
                             scheduleActivity(
                                 day, free_slot, activity, activities_to_schedule
@@ -304,19 +305,21 @@ def reschedule_week(user_week, activity_list):
 
                         # Add the activity as a Pareto candidate
                         pareto_candidates.append(
-                            (activity, delta_stress, activity.priority_index)
+                            (activity, stress_compensation, activity.priority_index)
                         )
 
                 else:
                     # Identify the Pareto-optimal activity
                     if pareto_candidates:
-                        # Minimize delta_stress and maximize priority_index
+                        # Maximize stress compensation and priority_index
                         pareto_optimal = sorted(
                             pareto_candidates,
                             key=lambda x: (
-                                x[1],
-                                -x[2],
-                            ),  # Minimize stress mismatch, maximize priority
+                                -x[
+                                    1
+                                ],  # Maximize stress compensation (absolute difference)
+                                -x[2],  # Maximize priority index
+                            ),
                         )[0][0]  # Select the best candidate
 
                         # Schedule the Pareto-optimal activity
