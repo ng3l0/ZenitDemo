@@ -370,57 +370,57 @@ def scheduleActivity(day, free_slot, activity, activities_to_schedule):
         activities_to_schedule.remove(activity)
 
 
-# example of usage:
+# example of usage: this was just for testing with a console result before than the front end is ready
 # Create a sample week
-week = Week("Week 1")
+# week = Week("Week 1")
 
 # Add days to the week
-week.add_day(Day("Monday", "2024-12-25", waking_up_hour="08:00", sleeping_hour="22:00"))
-week.add_day(
-    Day("Tuesday", "2024-12-26", waking_up_hour="08:00", sleeping_hour="22:00")
-)
+# week.add_day(Day("Monday", "2024-12-25", waking_up_hour="08:00", sleeping_hour="22:00"))
+# week.add_day(
+#     Day("Tuesday", "2024-12-26", waking_up_hour="08:00", sleeping_hour="22:00")
+# )
 
 # Add fixed activities
-week.get_day("2024-12-25").add_fixed_activity(
-    FixedActivity("Work", "09:00", "17:00", "2024-12-25", do_not_disturb=True)
-)
-week.get_day("2024-12-26").add_fixed_activity(
-    FixedActivity("Meeting", "10:00", "12:00", "2024-12-26", do_not_disturb=False)
-)
+# week.get_day("2024-12-25").add_fixed_activity(
+#     FixedActivity("Work", "09:00", "17:00", "2024-12-25", do_not_disturb=True)
+# )
+# week.get_day("2024-12-26").add_fixed_activity(
+#     FixedActivity("Meeting", "10:00", "12:00", "2024-12-26", do_not_disturb=False)
+# )
 
 # Add free slots
 # NB -> now the free slots are added manually, later they will be also calculated based on the fixed activities and the time that the user wants to sleep/wake up
 # also their stress level will be already calculated by the stress scurve of the user
-week.get_day("2024-12-25").add_free_slot(
-    FreeSlot("18:00", "20:00", "2024-12-25", stress_level=30)
-)
-week.get_day("2024-12-26").add_free_slot(
-    FreeSlot("15:00", "16:30", "2024-12-26", stress_level=60)
-)
+# week.get_day("2024-12-25").add_free_slot(
+#     FreeSlot("18:00", "20:00", "2024-12-25", stress_level=30)
+# )
+# week.get_day("2024-12-26").add_free_slot(
+#     FreeSlot("15:00", "16:30", "2024-12-26", stress_level=60)
+# )
 
 # Create a list of activities to schedule
-activities = [
-    Task("Finish Report", 120, "2024-12-28", 5, 80),  # Task with high priority
-    Habit("Exercise", 60, None, 3, 3, 30),  # Habit with 3 remaining frequencies
-    Habit("Meditation", 30, None, 4, 5, 20),  # Habit with 5 remaining frequencies
-]
+# activities = [
+#     Task("Finish Report", 120, "2024-12-28", 5, 80),  # Task with high priority
+#     Habit("Exercise", 60, None, 3, 3, 30),  # Habit with 3 remaining frequencies
+#     Habit("Meditation", 30, None, 4, 5, 20),  # Habit with 5 remaining frequencies
+# ]
 
 # Reschedule the week
 
-print("Starting rescheduling process...")
-rescheduled_week = reschedule_week(week, activities)
+# print("Starting rescheduling process...")
+# rescheduled_week = reschedule_week(week, activities)
 
 # Display the rescheduled week
-print("Rescheduled Week:")
-for day in rescheduled_week.days:
-    print(f"Day: {day.name}")
-    print("Fixed Activities:")
-    for fixed in day.fixed_activities:
-        print(f"  - {fixed.name_id} from {fixed.start_time} to {fixed.end_time}")
-    print("Scheduled Activities:")
-    for slot in day.free_slots:
-        if isinstance(slot, ScheduledActivity):
-            print(
-                f"  - {slot.activity_name_id} from {slot.start_time} to {slot.end_time}"
-            )
-    print()
+# print("Rescheduled Week:")
+# for day in rescheduled_week.days:
+#     print(f"Day: {day.name}")
+#     print("Fixed Activities:")
+#     for fixed in day.fixed_activities:
+#         print(f"  - {fixed.name_id} from {fixed.start_time} to {fixed.end_time}")
+#     print("Scheduled Activities:")
+#     for slot in day.free_slots:
+#         if isinstance(slot, ScheduledActivity):
+#             print(
+#                 f"  - {slot.activity_name_id} from {slot.start_time} to {slot.end_time}"
+#             )
+#     print()
