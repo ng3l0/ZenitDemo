@@ -1,0 +1,135 @@
+import pandas as pd
+import glob
+import numpy as np
+
+from sklearn.model_selection import TimeSeriesSplit
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import LSTM, Dense, Dropout
+from tensorflow.keras.callbacks import EarlyStopping
+
+import matplotlib.pyplot as plt
+from sklearn.metrics import r2_score
+import pandas as pd
+from sklearn.metrics import mean_squared_error, mean_absolute_error
+
+# Path to the processed CSV files
+path_to_files = "Path_to_processed_CSV*.csv"
+
+# Aggregate all CSV files into a single DataFrame
+all_files = glob.glob(path_to_files)
+dataframes = [pd.read_csv(f, parse_dates=['timestamp']) for f in all_files]
+combined_data = pd.concat(dataframes)
+
+# Order timestamp Data
+combined_data.sort_values(by='timestamp', inplace=True)
+
+# Function to create sequences window for next day
+def create_sequences_for_next_day(data, column_name, sequence_length, daily_samples):
+    X, y = [], []
+    values = data[column_name].values
+    for i in range(len(values) - sequence_length - daily_samples):
+        X.append(values[i:i + sequence_length])  # Input: sequence window
+        y.append(values[i + sequence_length:i + sequence_length + daily_samples])  # Output: Next day curve
+    return np.array(X), np.array(y)
+
+# Parameters for sequence creation
+sequence_length = 7 * 24 * 20  # 7 days, 20 samples per hour
+daily_samples = 480  # Next day curve samples
+
+# Create sequences
+X, y = create_sequences_for_next_day(combined_data, 'filtered_stress', sequence_length, daily_samples)
+
+
+
+# Time series split
+n_splits = 4
+tscv = TimeSeriesSplit(n_splits=n_splits)
+
+# Model Parameters
+sequence_length = X.shape[1]  # Time window length 
+input_dim = 1  # Number of features (stress values)
+output_dim = y.shape[1]  # Number of output values (next curve day)
+
+# Save predictions and real values for each fold
+all_y_test = []
+all_y_pred = []
+all_r2 = []
+timestamps_test = []  # Save timestamp for each test set
+
+# For each fold
+for fold, (train_index, test_index) in enumerate(tscv.split(X)):
+    print(f"Fold {fold + 1}/{n_splits}")
+
+    # Diveded data in train and test
+    X_train, X_test = X[train_index], X[test_index]
+    y_train, y_test = y[train_index], y[test_index]
+
+    # Add a dimension for the LSTM input
+    X_train = X_train.reshape((X_train.shape[0], X_train.shape[1], input_dim))
+    X_test = X_test.reshape((X_test.shape[0], X_test.shape[1], input_dim))
+
+    # Save timestamp for the test set
+    test_start_idx = sequence_length + (fold * len(y_test))
+    timestamps_test.append(
+        combined_data.iloc[test_start_idx:test_start_idx + daily_samples]['timestamp'].values
+    )
+
+    # Create LSTM model
+    model = Sequential([
+        LSTM(128, return_sequences=True, input_shape=(sequence_length, input_dim)),
+        Dropout(0.3),
+        LSTM(64, return_sequences=False),
+        Dropout(0.3),
+        Dense(output_dim)  # Output: Stress curve predicted
+    ])
+
+    # Compile the model
+    model.compile(optimizer='adam', loss='mse', metrics=['mae'])
+
+    # Early stopping
+    early_stop = EarlyStopping(monitor='val_loss', patience=10)
+
+    # Train the model
+    model.fit(
+        X_train, y_train,
+        validation_data=(X_test, y_test),
+        epochs=50,
+        batch_size=32,
+        callbacks=[early_stop],
+        verbose=1
+    )
+
+    # Prediction 
+    y_pred = model.predict(X_test)
+
+    # Save the results
+    all_y_test.append(y_test)
+    all_y_pred.append(y_pred)
+
+    # Calculate the metrics
+    mse = mean_squared_error(y_test.flatten(), y_pred.flatten())
+    mae = mean_absolute_error(y_test.flatten(), y_pred.flatten())
+    r2 = r2_score(y_test.flatten(), y_pred.flatten())
+    all_r2.append(r2)
+
+    # print fold results
+    print(f"Fold {fold + 1} MSE: {mse}")
+    print(f"Fold {fold + 1} MAE: {mae}")
+    print(f"Fold {fold + 1} R-squared: {r2}")
+
+# Visualize the results for each fold
+for fold in range(n_splits):
+    # Extract timestamp for the test set
+    timestamps = pd.to_datetime(timestamps_test[fold])
+    hours = timestamps.strftime('%H:%M')
+
+    plt.figure(figsize=(12, 6))
+    plt.plot(hours, all_y_test[fold][0], label="Real Curve")
+    plt.plot(hours, all_y_pred[fold][0], label="Predicted Curve")
+    plt.title(f"Prediction vs Real Curve (Fold {fold + 1}) - R2: {all_r2[fold]:.3f}")
+    plt.xlabel("Hour")
+    plt.xticks(range(0, len(hours), 60), rotation=45)  
+    plt.ylabel("Stress Level")
+    plt.legend()
+    plt.tight_layout()
+    plt.show()
